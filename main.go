@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/brutella/hc"
@@ -19,7 +18,7 @@ var (
 	manufacturer = kingpin.Flag("manufacturer", "device manufacturer").Default("N/A").Short('d').String()
 	model        = kingpin.Flag("model", "device model").Default("N/A").Short('m').String()
 	firmware     = kingpin.Flag("firmware", "device firmware").Default("N/A").Short('f').String()
-	pin          = kingpin.Flag("pin", "homekit device pin for connect").Short('p').Required().Uint64()
+	pin          = kingpin.Flag("pin", "homekit device pin for connect").Short('p').Required().String()
 	url          = kingpin.Flag("url", "http/https url for calling when you switch on").Short('u').Required().String()
 )
 
@@ -49,7 +48,7 @@ func main() {
 		}
 	})
 
-	t, err := hc.NewIPTransport(hc.Config{Pin: strconv.FormatUint(*pin, 10)}, acc.Accessory)
+	t, err := hc.NewIPTransport(hc.Config{Pin: *pin}, acc.Accessory)
 	if err != nil {
 		log.Fatal(err)
 	}
