@@ -14,12 +14,13 @@ var (
 	version      string
 	revision     string
 	name         = kingpin.Flag("name", "homekit device name").Default("http-switch").Short('n').String()
-	serialnumber = kingpin.Flag("serial-number", "device serial number").Default("N/A").Short('s').String()
+	pin          = kingpin.Flag("pin", "homekit device pin for connect").Short('p').Default("00102003").String()
+	url          = kingpin.Flag("url", "http/https url for calling when you switch on").Short('u').Required().String()
 	manufacturer = kingpin.Flag("manufacturer", "device manufacturer").Default("N/A").Short('d').String()
 	model        = kingpin.Flag("model", "device model").Default("N/A").Short('m').String()
+	serialNumber = kingpin.Flag("serial-number", "device serial number").Default("N/A").Short('s').String()
 	firmware     = kingpin.Flag("firmware", "device firmware").Default("N/A").Short('f').String()
-	pin          = kingpin.Flag("pin", "homekit device pin for connect").Short('p').Required().String()
-	url          = kingpin.Flag("url", "http/https url for calling when you switch on").Short('u').Required().String()
+	storagePath  = kingpin.Flag("storage-path", "directory for configfiles").Default(*name).String()
 )
 
 func main() {
@@ -28,14 +29,18 @@ func main() {
 
 	info := accessory.Info{
 		Name:             *name,
-		SerialNumber:     *serialnumber,
+		SerialNumber:     *serialNumber,
 		Manufacturer:     *manufacturer,
 		Model:            *model,
 		FirmwareRevision: *firmware,
 	}
 
+	config := hc.Config{
+		Pin:         *pin,
+		StoragePath: *storagePath,
+	}
+
 	acc := accessory.NewSwitch(info)
-	// acc := accessory.NewLightbulb(info)
 
 	acc.Switch.On.OnValueRemoteUpdate(func(on bool) {
 		if on == true {
@@ -48,7 +53,7 @@ func main() {
 		}
 	})
 
-	t, err := hc.NewIPTransport(hc.Config{Pin: *pin}, acc.Accessory)
+	t, err := hc.NewIPTransport(config, acc.Accessory)
 	if err != nil {
 		log.Fatal(err)
 	}
