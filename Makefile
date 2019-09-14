@@ -23,6 +23,11 @@ cross: main.go  ## Build binaries for cross platform.
 		GOOS=linux GOARCH=$${arch} make build; \
 		zip pkg/$(NAME)_$(VERSION)_linux_$${arch}.zip $(NAME); \
 	done;
+	@# linux(raspberry pi)
+	@for arm in "5" "6" "7"; do \
+		GOOS=linux GOARM=$${arm} GOARCH=arm make build; \
+		zip pkg/$(NAME)_$(VERSION)_linux_arm$${arm}.zip $(NAME); \
+	done;
 
 .PHONY: help
 help: ## Show help text
