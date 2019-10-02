@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	version      string
-	revision     string
+	version      = "dev"
+	commit       = "none"
+	date         = "unknown"
 	name         = kingpin.Flag("name", "homekit device name").Default("http-switch").Short('n').String()
 	pin          = kingpin.Flag("pin", "homekit device pin for connect").Short('p').Default("00102003").String()
 	url          = kingpin.Flag("url", "http/https url for calling when you switch on").Short('u').Required().String()
@@ -24,7 +25,7 @@ var (
 )
 
 func main() {
-	kingpin.Version(version + "-" + revision)
+	kingpin.Version(version + ", commit " + commit + ", built at " + date)
 	kingpin.Parse()
 
 	info := accessory.Info{

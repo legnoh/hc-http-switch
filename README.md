@@ -3,7 +3,7 @@
 simple switch http get client for Apple Homekit Accessory Protocol(HAP)
 
 ```sh
-> ./hc-http-switch --help   
+> ./hc-http-switch --help
 usage: hc-http-switch --url=URL [<flags>]
 
 Flags:
