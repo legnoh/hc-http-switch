@@ -14,13 +14,14 @@ var (
 	version      = "dev"
 	commit       = "none"
 	date         = "unknown"
+	url          = kingpin.Flag("url", "http/https url for calling when you switch on").Short('u').Required().Strings()
 	name         = kingpin.Flag("name", "homekit device name").Default("http-switch").Short('n').String()
 	pin          = kingpin.Flag("pin", "homekit device pin for connect").Short('p').Default("00102003").String()
-	url          = kingpin.Flag("url", "http/https url for calling when you switch on").Short('u').Required().String()
-	manufacturer = kingpin.Flag("manufacturer", "device manufacturer").Default("N/A").Short('d').String()
-	model        = kingpin.Flag("model", "device model").Default("N/A").Short('m').String()
-	serialNumber = kingpin.Flag("serial-number", "device serial number").Default("N/A").Short('s').String()
-	firmware     = kingpin.Flag("firmware", "device firmware").Default("N/A").Short('f').String()
+	duration     = kingpin.Flag("duration", "get urls duration").Default("2").Int()
+	manufacturer = kingpin.Flag("manufacturer", "device manufacturer").Default("N/A").String()
+	model        = kingpin.Flag("model", "device model").Default("N/A").String()
+	serialNumber = kingpin.Flag("serial-number", "device serial number").Default("N/A").String()
+	firmware     = kingpin.Flag("firmware", "device firmware").Default("N/A").String()
 	storagePath  = kingpin.Flag("storage-path", "directory for configfiles").Default(*name).String()
 )
 
@@ -42,12 +43,16 @@ func main() {
 	}
 
 	acc := accessory.NewSwitch(info)
+	urls := *url
 
 	acc.Switch.On.OnValueRemoteUpdate(func(on bool) {
 		if on == true {
-			http.Get(*url)
 			log.Println(*name + ": Turn Switch On")
-
+			for i := 0; i < len(urls); i++ {
+				http.Get(urls[i])
+				log.Println(*name + ": GET: " + urls[i])
+				time.Sleep(time.Duration(*duration) * time.Second)
+			}
 			time.Sleep(3 * time.Second)
 			acc.Switch.On.SetValue(false)
 			log.Println(*name + ": Turn Switch Off(auto)")
