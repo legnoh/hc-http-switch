@@ -1,9 +1,10 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
@@ -53,15 +54,15 @@ func main() {
 		}
 
 		if on == true {
-			log.Println(*name + ": Turn Switch On")
+			log.Info(*name + ": Turn Switch On")
 			for i := 0; i < len(urls); i++ {
 				client.Get(urls[i])
-				log.Println(*name + ": GET: " + urls[i])
+				log.Info(*name + ": GET: " + urls[i])
 				time.Sleep(time.Duration(*duration) * time.Second)
 			}
 			time.Sleep(3 * time.Second)
 			acc.Switch.On.SetValue(false)
-			log.Println(*name + ": Turn Switch Off(auto)")
+			log.Info(*name + ": Turn Switch Off(auto)")
 		}
 	})
 
