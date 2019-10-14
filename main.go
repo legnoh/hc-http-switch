@@ -4,10 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/brutella/hc"
 	"github.com/brutella/hc/accessory"
+	"github.com/brutella/hc/log"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -54,21 +53,21 @@ func main() {
 		}
 
 		if on == true {
-			log.Info(*name + ": Turn Switch On")
+			log.Info.Printf(*name + ": Turn Switch On")
 			for i := 0; i < len(urls); i++ {
 				client.Get(urls[i])
-				log.Info(*name + ": GET: " + urls[i])
+				log.Info.Printf(*name + ": GET: " + urls[i])
 				time.Sleep(time.Duration(*duration) * time.Second)
 			}
 			time.Sleep(3 * time.Second)
 			acc.Switch.On.SetValue(false)
-			log.Info(*name + ": Turn Switch Off(auto)")
+			log.Info.Printf(*name + ": Turn Switch Off(auto)")
 		}
 	})
 
 	t, err := hc.NewIPTransport(config, acc.Accessory)
 	if err != nil {
-		log.Fatal(err)
+		log.Info.Fatal(err)
 	}
 
 	hc.OnTermination(func() {
