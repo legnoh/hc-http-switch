@@ -17,6 +17,7 @@ var (
 	url          = kingpin.Flag("url", "http/https url for calling when you switch on").Short('u').Required().Strings()
 	name         = kingpin.Flag("name", "homekit device name").Default("http-switch").Short('n').String()
 	pin          = kingpin.Flag("pin", "homekit device pin for connect").Short('p').Default("00102003").String()
+	timeout      = kingpin.Flag("timeout", "request timeout seconds").Default("10").Int()
 	duration     = kingpin.Flag("duration", "get urls duration").Default("2").Int()
 	manufacturer = kingpin.Flag("manufacturer", "device manufacturer").Default("N/A").String()
 	model        = kingpin.Flag("model", "device model").Default("N/A").String()
@@ -46,10 +47,15 @@ func main() {
 	urls := *url
 
 	acc.Switch.On.OnValueRemoteUpdate(func(on bool) {
+
+		client := &http.Client{
+			Timeout: time.Duration(*timeout) * time.Second,
+		}
+
 		if on == true {
 			log.Println(*name + ": Turn Switch On")
 			for i := 0; i < len(urls); i++ {
-				http.Get(urls[i])
+				client.Get(urls[i])
 				log.Println(*name + ": GET: " + urls[i])
 				time.Sleep(time.Duration(*duration) * time.Second)
 			}
